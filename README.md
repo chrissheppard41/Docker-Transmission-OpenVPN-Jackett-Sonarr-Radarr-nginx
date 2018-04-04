@@ -67,12 +67,15 @@ For steps 4 and 5, Transmission has a downloads folder, and inside that there ar
 So the Tranmissions container will have a folder structure like this
 
 `/downloads` points to hosts <path/to/your/downloads/> It will contain a `complete` and `incomplete` folder
+
 `/watch` points to hosts <path/to/your/watch/>
 
 Radarr's and Sonarr's download folder structure should be
+
 `/downloads/complete` points to hosts <path/to/your/downloads/complete folder/>
 
 Jackett's folder strcture
+
 `/downloads` points to hosts <path/to/your/watch/>
 
 
@@ -104,7 +107,9 @@ cap_add:
 network_mode: server_default # Telling this container that it's main network is the server default (can be any name)
 ```
 (network_node is also known as --net)
+
 https://docs.docker.com/compose/compose-file/#cap_add-cap_drop
+
 https://docs.docker.com/compose/compose-file/#network_mode
 
 Transmission and Jackett will have these variables:
@@ -120,8 +125,11 @@ Docker magic
 https://docs.docker.com/compose/compose-file/#depends_on
 
 https://docs.docker.com/network/
+
 https://docs.docker.com/network/bridge/
+
 https://docs.docker.com/compose/compose-file/
+
 https://docs.docker.com/compose/networking/
 
 
@@ -220,20 +228,27 @@ Jackett, Transmissions and OpenCpn shouldn't have any ports assigned to them
 ## Configure
 
 Sonarr:
+
 https://github.com/Sonarr/Sonarr/wiki
+
 https://sonarr.tv/
 
 Radarr:
+
 https://github.com/Radarr/Radarr/wiki
+
 https://radarr.video/
 
 Transmission:
+
 https://transmissionbt.com/
 
 Jackett:
+
 https://github.com/Jackett/Jackett/wiki
 
 PIA:
+
 https://www.privateinternetaccess.com/
 
 ## Nginx proxy
@@ -263,8 +278,13 @@ Transmission sometimes doens't play ball the first time you boot up as you might
 Other reading material to expand on this further
 
 itsdaspecialk/pia-openvpn: https://hub.docker.com/r/itsdaspecialk/pia-openvpn/
+
 linuxserver/transmission: https://hub.docker.com/r/linuxserver/transmission/
+
 linuxserver/jackett: https://hub.docker.com/r/linuxserver/jackett/
+
 nginx: https://hub.docker.com/_/nginx/
+
 linuxserver/sonarr: https://hub.docker.com/r/linuxserver/sonarr/
+
 linuxserver/radarr: https://hub.docker.com/r/linuxserver/radarr/

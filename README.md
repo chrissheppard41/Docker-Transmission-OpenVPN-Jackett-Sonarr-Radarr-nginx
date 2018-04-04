@@ -15,53 +15,79 @@ A simple network setup that has Jackett and Transmission route their traffic thr
 
 To run this here is what you need to do (Note that you need to configure your path directories to your servers path, i've included what they should look like, feel free to update):
 
-1. Update service `vpn` by adding in your user details by replacing <Username> and <Password> with the details PIA provide
+1. Create folders in `/opt`: <br>
+ A) `mkdir /opt/transmission` <br>
+ B) `mkdir /opt/jackett` <br>
+ C) `mkdir /opt/sonarr` <br>
+ D) `mkdir /opt/radarr`
+
+
+2. Chown the folders above to the user id that corresponds to the data in your .env file: <br>
+ A) `chown -R <user>:<group> /opt/transmission` <br>
+ B) `chown -R <user>:<group> /opt/jackett` <br>
+ C) `chown -R <user>:<group> /opt/sonarr` <br>
+ D) `chown -R <user>:<group> /opt/radarr`
+
+3. Clone this information out into a folder of your choice then CD into it
+
+4. Copy the .env.example and rename it to .env `cp .env.example .evn`. You can change your user and group ID in this file to whatever user you wish. 1000 is the default. 0 is root. Docker will create this user ID when the containers build. Make sure that user and group id has access to the folders:
+* /opt/transmission
+* /opt/jackett
+* /opt/sonarr
+* /opt/radarr
+* <path/to/your/downloads folder/>
+* <path/to/your/watch folder/>
+* <path/to/your/TV folder/>
+* <path/to/your/Movies folder/>
+
+5. Copy the .evn_openvpn.example and rename it to .evn_openvpn `cp .evn_openvpn.example .evn_openvpn`.
+
+6. Update service `vpn` env file (.env_openvpn) by adding in your user details by replacing <Username> and <Password> with the details PIA provide
 
 ```
-    environment:
-      REGION: 'Sweden'
-      USERNAME: '<Username>'
-      PASSWORD: '<Password>'
+REGION='Sweden'
+USERNAME='<Username>'
+PASSWORD='<Password>'
 ```
 
-2. Update the service `Transmission` volume path directories
+7. Update the service `Transmission` volume path directories
 
 ```
 volumes:
-      - ./transmission/:/config
-      - <path/to/your/downloads/>:/downloads
-      - <path/to/your/watch/>:/watch
+  - /opt/transmission/:/config
+  - <path/to/your/downloads folder/>:/downloads
+  - <path/to/your/watch folder/>:/watch
 ```
 By changing these folders you will find that the other containers folders must change, it's easy enough but just be careful because any disconnects will cause errors
 
-3. Update the service `Jackett` volume path directories
+8. Update the service `Jackett` volume path directories
 
 ```
 volumes:
-      - ./jackett/:/config
-      - <path/to/your/watch/>:/downloads
-      - /etc/localtime:/etc/localtime:ro
+  - /opt/jackett/:/config
+  - <path/to/your/watch folder/>:/downloads
+  - /etc/localtime:/etc/localtime:ro
 ```
 
-4. Update the service `Sonarr` volume path directories
+9. Update the service `Sonarr` volume path directories
 ```
-    volumes:
-      - ./sonarr/:/config
-      - <path/to/your/TV folder/>:/tv
-      - <path/to/your/downloads/complete folder/>:/downloads/complete/
-      - /etc/localtime:/etc/localtime:ro
-```
-
-5. Update the service `Radarr` volume path directories
-```
-    volumes:
-      - ./radarr/:/config
-      - <path/to/your/Movies folder/>:/movies
-      - <path/to/your/downloads/complete folder/>:/downloads/complete/
-      - /etc/localtime:/etc/localtime:ro
+volumes:
+  - /opt/sonarr/:/config
+  - <path/to/your/TV folder/>:/tv
+  - <path/to/your/downloads/complete folder/>:/downloads/complete/
+  - /etc/localtime:/etc/localtime:ro
 ```
 
-For steps 4 and 5, Transmission has a downloads folder, and inside that there are incomplete and complete folders, you will want to point your download complete folder at that folder structure, also mirror your downloads folder like above `/downloads/complete/` else Sonarr and Radarr wont be able to see the downloaded files.
+10. Update the service `Radarr` volume path directories
+```
+volumes:
+  - /opt/radarr/:/config
+  - <path/to/your/Movies folder/>:/movies
+  - <path/to/your/downloads/complete folder/>:/downloads/complete/
+  - /etc/localtime:/etc/localtime:ro
+```
+
+For steps 9 and 10, Transmission has a downloads folder, and inside that there are incomplete and complete folders, you will want to point your download complete folder at that folder structure, also mirror your downloads folder like above `/downloads/complete/` else Sonarr and Radarr wont be able to see the downloaded files.
 
 
 So the Tranmissions container will have a folder structure like this <br>
@@ -75,11 +101,11 @@ Jackett's folder strcture <br>
 `/downloads` points to hosts <path/to/your/watch/>
 
 
-6. Boot `docker-compose up -d`
+11. Boot `docker-compose up -d`
 
 Hopefully you wont see any failures
 
-7. If you check your hosts child folders of this directory you will see populated config files, take a look at them. Transmission has a full series of configurations you do, you can also update parts of your configuration via the web GUI but read up first on the Transmission page first before making any changes (remember updating your download folders will result in you having to update Sonarr, and Radarr path to downloaded files). Side note, don't mess around with settings you are not fimular with, you might damage your configuration so much that you can't repair and you will have to start again with that container.
+12. If you check your hosts child folders of this directory you will see populated config files, take a look at them. Transmission has a full series of configurations you do, you can also update parts of your configuration via the web GUI but read up first on the Transmission page first before making any changes (remember updating your download folders will result in you having to update Sonarr, and Radarr path to downloaded files). Side note, don't mess around with settings you are not fimular with, you might damage your configuration so much that you can't repair and you will have to start again with that container.
 
 ## How it works
 

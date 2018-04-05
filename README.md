@@ -1,4 +1,4 @@
-# Transmission-OpenVPN-Jackett-Sonarr-Radarr-nginx
+# Docker-Transmission-OpenVPN-Jackett-Sonarr-Radarr-nginx
 
 ## Requirements
 
@@ -90,14 +90,14 @@ volumes:
 For steps 9 and 10, Transmission has a downloads folder, and inside that there are incomplete and complete folders, you will want to point your download complete folder at that folder structure, also mirror your downloads folder like above `/downloads/complete/` else Sonarr and Radarr wont be able to see the downloaded files.
 
 
-So the Tranmissions container will have a folder structure like this <br>
+So the Tranmission's container will have a folder structure like this <br>
 `/downloads` points to hosts <path/to/your/downloads/> It will contain a `complete` and `incomplete` folder <br>
 `/watch` points to hosts <path/to/your/watch/>
 
 Radarr's and Sonarr's download folder structure should be <br>
 `/downloads/complete` points to hosts <path/to/your/downloads/complete folder/>
 
-Jackett's folder strcture <br>
+Jackett's folder structure <br>
 `/downloads` points to hosts <path/to/your/watch/>
 
 
@@ -105,7 +105,7 @@ Jackett's folder strcture <br>
 
 Hopefully you wont see any failures
 
-12. If you check your hosts child folders of this directory you will see populated config files, take a look at them. Transmission has a full series of configurations you do, you can also update parts of your configuration via the web GUI but read up first on the Transmission page first before making any changes (remember updating your download folders will result in you having to update Sonarr, and Radarr path to downloaded files). Side note, don't mess around with settings you are not fimular with, you might damage your configuration so much that you can't repair and you will have to start again with that container.
+12. If you check your hosts child folders of this directory you will see populated config files, take a look at them. Transmission has a full series of configurations you do, you can also update parts of your configuration via the web GUI but read up first on the Transmission page first before making any changes (remember updating your download folders will result in you having to update Sonarr, and Radarr path to downloaded files). Side note, don't mess around with settings you are not familiar with, you might damage your configuration so much that you can't repair and you will have to start again with that container.
 
 ## How it works
 
@@ -125,7 +125,7 @@ Firstly the vpn service will have these variables:
 
 ```
 cap_add:
-  - NET_ADMIN # Giving this container privlage access on this network
+  - NET_ADMIN # Giving this container privilege access on this network
 network_mode: server_default # Telling this container that it's main network is the server default (can be any name)
 ```
 (network_node is also known as --net) <br>
@@ -239,7 +239,7 @@ Then
 The IPs both should match
 
 
-Jackett, Transmissions and OpenCpn shouldn't have any ports assigned to them
+Jackett, Transmissions and OpenVpn shouldn't have any ports assigned to them.
 
 ## Configure
 
@@ -276,9 +276,9 @@ https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/
 
 `docker ps` (you should see 6 containers running)
 
-`curl ipinfo.io/ip` (to get your IP of your host or ssh into the containers then excute command to check that you are on the VPN)
+`curl ipinfo.io/ip` (to get your IP of your host or ssh into the containers then execute command to check that you are on the VPN)
 
-Transmission sometimes doens't play ball the first time you boot up as you might see error with permissions so to solve this you can either set the PGID, PUID of transmission to 0 (root) or keep it to 1000 (default user):
+Transmission sometimes doesn't play ball the first time you boot up as you might see error with permissions so to solve this you can either set the PGID, PUID of transmission to 0 (root) or keep it to 1000 (default user):
 1. Execute `docker exec -it transmission bash`
 2. Run `chown -R abc:users /config`
 3. Execute `exit`

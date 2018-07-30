@@ -99,6 +99,24 @@ services:
       - 7878:7878
     restart: unless-stopped
 
+  lidarr:
+    image: linuxserver/lidarr
+    container_name: lidarr
+#    depends_on:
+#      - transmission
+    networks:
+      - vpn-network
+    volumes:
+      - /opt/lidarr/:/config
+      - /media/content/Music/:/music
+      - /media/content/downloads/complete/:/downloads/complete/
+      - /etc/localtime:/etc/localtime:ro
+    env_file:
+      - .env
+    ports:
+      - 8686:8686
+    restart: unless-stopped
+
 networks:
   vpn-network:
     external:

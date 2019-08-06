@@ -120,6 +120,8 @@ services:
   lazylibrarian:
     image: linuxserver/lazylibrarian
     container_name: lazylibrarian
+#    depends_on:
+#      - transmission
     environment:
       - PUID=1000
       - PGID=1000

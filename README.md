@@ -1,4 +1,4 @@
-# Docker-Transmission-OpenVPN-Jackett-Sonarr-Radarr-nginx
+# Docker-Transmission-OpenVPN-Jackett-Sonarr-Radarr-Lidarr-LazyLibrarian-nginx
 
 ## Requirements
 
@@ -8,7 +8,7 @@
 
 ## Introduction
 
-A simple network setup that has Jackett and Transmission route their traffic through openVPN while exposing Radarr (http://<localhost-ip>:7878), Sonarr (http://<localhost-ip>:8989), Lidarr (http://<localhost-ip>:8686) and nginx to your local network. Nginx acts like a proxy for both Jackett (http://<localhost-ip>:8081) and Transmission (http://<localhost-ip>:8080).
+A simple network setup that has Jackett and Transmission route their traffic through openVPN while exposing Radarr (http://<localhost-ip>:7878), Sonarr (http://<localhost-ip>:8989), Lidarr (http://<localhost-ip>:8686), LazyLibrarian (http://<localhost-ip>:5299) and nginx to your local network. Nginx acts like a proxy for both Jackett (http://<localhost-ip>:8081) and Transmission (http://<localhost-ip>:8080).
 
 
 ## Install
@@ -20,7 +20,8 @@ To run this here is what you need to do (Note that you need to configure your pa
  B) `mkdir /opt/jackett` <br>
  C) `mkdir /opt/sonarr` <br>
  D) `mkdir /opt/radarr` <br>
- E) `mkdir /opt/lidarr`
+ E) `mkdir /opt/lidarr` <br>
+ F) `mkdir /opt/lazylibrarian`
 
 
 2. Chown the folders above to the user id that corresponds to the data in your .env file: <br>
@@ -28,7 +29,8 @@ To run this here is what you need to do (Note that you need to configure your pa
  B) `chown -R <user>:<group> /opt/jackett` <br>
  C) `chown -R <user>:<group> /opt/sonarr` <br>
  D) `chown -R <user>:<group> /opt/radarr` <br>
- E) `chown -R <user>:<group> /opt/lidarr`
+ E) `chown -R <user>:<group> /opt/lidarr` <br>
+ F) `chown -R <user>:<group> /opt/lazylibrarian`
 
 3. Clone this information out into a folder of your choice then CD into it
 
@@ -38,11 +40,13 @@ To run this here is what you need to do (Note that you need to configure your pa
 * /opt/sonarr
 * /opt/radarr
 * /opt/lidarr
+* /opt/lazylibrarian
 * <path/to/your/downloads folder/>
 * <path/to/your/watch folder/>
 * <path/to/your/TV folder/>
 * <path/to/your/Movies folder/>
 * <path/to/your/Music folder/>
+* <path/to/your/Books folder/>
 
 5. Copy the .evn_openvpn.example and rename it to .evn_openvpn `cp .evn_openvpn.example .evn_openvpn`.
 
@@ -100,14 +104,22 @@ volumes:
   - /etc/localtime:/etc/localtime:ro
 ```
 
-For steps 9 10 and 11, Transmission has a downloads folder, and inside that there are incomplete and complete folders, you will want to point your download complete folder at that folder structure, also mirror your downloads folder like above `/downloads/complete/` else Sonarr Radarr and Lidarr wont be able to see the downloaded files.
+12. Update the service `LazyLibrarian` volume path directories
+```
+volumes:
+  - /opt/lazylibrarian/:/config
+  - <path/to/your/Books folder/>:/movies
+  - <path/to/your/downloads/complete folder/>:/downloads/complete/
+```
+
+For steps 9 10 11 and 12, Transmission has a downloads folder, and inside that there are incomplete and complete folders, you will want to point your download complete folder at that folder structure, also mirror your downloads folder like above `/downloads/complete/` else Sonarr Radarr Lidarr and lazylibrarian wont be able to see the downloaded files.
 
 
 So the Tranmission's container will have a folder structure like this <br>
 `/downloads` points to hosts <path/to/your/downloads/> It will contain a `complete` and `incomplete` folder <br>
 `/watch` points to hosts <path/to/your/watch/>
 
-Radarr's, Sonarr's and Lidarr's download folder structure should be <br>
+Radarr's, Sonarr's, Lidarr's and LazyLibrarian's download folder structure should be <br>
 `/downloads/complete` points to hosts <path/to/your/downloads/complete folder/>
 
 Jackett's folder structure <br>
@@ -122,7 +134,7 @@ Hopefully you wont see any failures
 
 ## How it works
 
-Sonarr, Radarr, Lidarr and nginx will be exposed to your hosts on the following ports 8080, 8081, 7878 and 8989.
+Sonarr, Radarr, Lidarr, LazyLibrarian and nginx will be exposed to your hosts on the following ports 8080, 8081, 7878 and 8989.
 
 If you see in each service
 ```
@@ -164,7 +176,7 @@ https://docs.docker.com/compose/networking/
 
 ## Health check
 
-Make sure that your Radarr, Sonarr and Lidarr are running and their ports 7878, 8989 and 8686 are running respectively
+Make sure that your Radarr, Sonarr, Lidarr, LazyLibrarian are running and their ports 7878, 8989 and 8686 are running respectively
 
 Nginx should be running on ports 8080 and 8081 (test those addresses in the browser http://<localhost-ip>:8080 (transmission) and http://<localhost-ip>:8080 (jackett))
 
@@ -264,6 +276,13 @@ Radarr:<br>
 https://github.com/Radarr/Radarr/wiki <br>
 https://radarr.video/
 
+Lidarr:<br>
+https://github.com/lidarr/Lidarr/wiki <br>
+http://lidarr.audio/
+
+LazyLibrarian:<br>
+https://lazylibrarian.gitlab.io/
+
 Transmission:<br>
 https://transmissionbt.com/
 
@@ -305,3 +324,5 @@ linuxserver/jackett: https://hub.docker.com/r/linuxserver/jackett/ <br>
 nginx: https://hub.docker.com/_/nginx/ <br>
 linuxserver/sonarr: https://hub.docker.com/r/linuxserver/sonarr/ <br>
 linuxserver/radarr: https://hub.docker.com/r/linuxserver/radarr/ <br>
+linuxserver/lidarr: https://hub.docker.com/r/linuxserver/lidarr/ <br>
+linuxserver/lazylibrarian: https://hub.docker.com/r/linuxserver/lazylibrarian/ <br>

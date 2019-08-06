@@ -117,6 +117,22 @@ services:
       - 8686:8686
     restart: unless-stopped
 
+  lazylibrarian:
+    image: linuxserver/lazylibrarian
+    container_name: lazylibrarian
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+        #- DOCKER_MODS=linuxserver/calibre-web:calibre #optional
+    volumes:
+      - /opt/lazylibrarian/:/config
+      - /media/content/downloads/complete/:/downloads/complete/
+      - /media/content/Books/:/books
+    ports:
+      - 5299:5299
+    restart: unless-stopped
+
 networks:
   vpn-network:
     external:

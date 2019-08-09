@@ -47,6 +47,7 @@ To run this here is what you need to do (Note that you need to configure your pa
 * <path/to/your/Movies folder/>
 * <path/to/your/Music folder/>
 * <path/to/your/Books folder/>
+* <path/to/your/Audioooks folder/>
 
 5. Copy the .evn_openvpn.example and rename it to .evn_openvpn `cp .evn_openvpn.example .evn_openvpn`.
 
@@ -108,7 +109,8 @@ volumes:
 ```
 volumes:
   - /opt/lazylibrarian/:/config
-  - <path/to/your/Books folder/>:/movies
+  - <path/to/your/Books folder/>:/books
+  - <path/to/your/Audioooks folder/>:/audiobooks
   - <path/to/your/downloads/complete folder/>:/downloads/complete/
 ```
 

@@ -131,6 +131,7 @@ services:
       - /opt/lazylibrarian/:/config
       - /media/content/downloads/complete/:/downloads/complete/
       - /media/content/Books/:/books
+      - /media/content/Audioooks/:/audiobooks
     ports:
       - 5299:5299
     restart: unless-stopped

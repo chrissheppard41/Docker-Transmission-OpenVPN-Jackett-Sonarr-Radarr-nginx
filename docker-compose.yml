@@ -1,142 +1,101 @@
-version: "3.6"
-services:
+version: "3.7"
 
-  vpn:
-    image: itsdaspecialk/pia-openvpn
-    container_name: pia
+services:
+  pia_transmission:
+    image: haugene/transmission-openvpn
     cap_add:
       - NET_ADMIN
-    network_mode: server_default
+    devices:
+      - "/dev/net/tun"
+    container_name: pia_transmission
+    restart: always
+    ports:
+      - "9091:9091"
+      - "8888:8888"
+      - "8989:8989" #sonarr
+      - "9117:9117" #jackett
+      - "7878:7878" #radarr
+      - "8686:8686" #lidarr
+      - "5299:5299" #lazyLib
     dns:
-     - 209.222.18.222
-     - 209.222.18.218
+      - 8.8.8.8
+      - 8.8.4.4
+    networks:
+      - media_server
     env_file:
       - .env_openvpn
-    restart: always
-
-  transmission:
-    image: linuxserver/transmission
-    container_name: transmission
-    depends_on:
-      - vpn
-    env_file:
-      - .env
-    network_mode: service:vpn
-#    ports:
-#      - 9091:9091
-#      - 51413:51413
     volumes:
-      - /opt/transmission/:/config
-      - /media/content/downloads/:/downloads
-      - /media/content/watch/:/watch
-    restart: unless-stopped
-    stdin_open: true
-    tty: true
+      - /opt/transmission:/data/transmission-home
+      - /media/content/downloads:/data
+      - /media/content/watch:/data/watch
 
   jackett:
     image: linuxserver/jackett
     container_name: jackett
     depends_on:
-      - vpn
-    network_mode: service:vpn
+      - pia_transmission
+    restart: always
+    env_file:
+      - .env
     volumes:
       - /opt/jackett/:/config
       - /media/content/watch/:/downloads
       - /etc/localtime:/etc/localtime:ro
-    env_file:
-      - .env
-#    ports:
-#      - 9117:9117
-    restart: unless-stopped
-
-  nginx:
-    image: nginx
-    container_name: nginx
-#    depends_on:
-#      - transmission
-    networks:
-      - vpn-network
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-    ports:
-      - 8080:8080
-      - 8081:8081
-    restart: unless-stopped
+    network_mode: "service:pia_transmission"
 
   sonarr:
     image: linuxserver/sonarr
     container_name: sonarr
-#    depends_on:
-#      - transmission
-    networks:
-      - vpn-network
     volumes:
       - /opt/sonarr/:/config
       - /media/content/TV/:/tv
-      - /media/content/downloads/complete/:/downloads/complete/
+      - /media/content/downloads/completed/:/downloads/complete/
       - /etc/localtime:/etc/localtime:ro
     env_file:
-      - .env
-    ports:
-      - 8989:8989
+      - .env-hidden
     restart: unless-stopped
+    network_mode: "service:pia_transmission"
+
 
   radarr:
     image: linuxserver/radarr
     container_name: radarr
-#    depends_on:
-#      - transmission
-    networks:
-      - vpn-network
     volumes:
       - /opt/radarr/:/config
       - /media/content/Movies/:/movies
-      - /media/content/downloads/complete/:/downloads/complete/
+      - /media/content/downloads/completed/:/downloads/complete/
       - /etc/localtime:/etc/localtime:ro
     env_file:
-      - .env
-    ports:
-      - 7878:7878
+      - .env-hidden
     restart: unless-stopped
+    network_mode: "service:pia_transmission"
 
   lidarr:
     image: linuxserver/lidarr
     container_name: lidarr
-#    depends_on:
-#      - transmission
-    networks:
-      - vpn-network
     volumes:
       - /opt/lidarr/:/config
       - /media/content/Music/:/music
-      - /media/content/downloads/complete/:/downloads/complete/
+      - /media/content/downloads/completed/:/downloads/complete/
       - /etc/localtime:/etc/localtime:ro
     env_file:
-      - .env
-    ports:
-      - 8686:8686
+      - .env-hidden
     restart: unless-stopped
+    network_mode: "service:pia_transmission"
 
   lazylibrarian:
     image: linuxserver/lazylibrarian
     container_name: lazylibrarian
-#    depends_on:
-#      - transmission
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/London
-        #- DOCKER_MODS=linuxserver/calibre-web:calibre #optional
+    env_file:
+      - .env-hidden
     volumes:
       - /opt/lazylibrarian/:/config
-      - /media/content/downloads/complete/:/downloads/complete/
+      - /media/content/downloads/completed/:/downloads/complete/
       - /media/content/Books/:/books
       - /media/content/Audioooks/:/audiobooks
-    ports:
-      - 5299:5299
     restart: unless-stopped
+    network_mode: "service:pia_transmission"
 
 networks:
-  vpn-network:
-    external:
-      name: server_default
+  media_server:
+    driver: bridge

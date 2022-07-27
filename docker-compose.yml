@@ -16,7 +16,9 @@ services:
       - "9117:9117" #jackett
       - "7878:7878" #radarr
       - "8686:8686" #lidarr
-      - "5299:5299" #lazyLib
+      - "8787:8787" #readarr
+      - "9696:9696" #prowlarr
+      #- "5299:5299" #lazyLib
     dns:
       - 8.8.8.8
       - 8.8.4.4
@@ -27,7 +29,6 @@ services:
     volumes:
       - /opt/transmission:/data/transmission-home
       - /media/content/downloads:/data
-      - /media/content/watch:/data/watch
 
   jackett:
     image: linuxserver/jackett
@@ -39,9 +40,11 @@ services:
       - .env
     volumes:
       - /opt/jackett/:/config
-      - /media/content/watch/:/downloads
+      - /media/content/downloads/watch/:/downloads
       - /etc/localtime:/etc/localtime:ro
     network_mode: "service:pia_transmission"
+    depends_on:
+      - "pia_transmission"
 
   sonarr:
     image: linuxserver/sonarr
@@ -49,26 +52,29 @@ services:
     volumes:
       - /opt/sonarr/:/config
       - /media/content/TV/:/tv
-      - /media/content/downloads/completed/:/downloads/complete/
+      - /media/content/downloads/completed:/data/completed
       - /etc/localtime:/etc/localtime:ro
     env_file:
-      - .env-hidden
+      - .env
     restart: unless-stopped
     network_mode: "service:pia_transmission"
-
+    depends_on:
+      - "pia_transmission"
 
   radarr:
     image: linuxserver/radarr
     container_name: radarr
     volumes:
-      - /opt/radarr/:/config
-      - /media/content/Movies/:/movies
-      - /media/content/downloads/completed/:/downloads/complete/
+      - /opt/radarr:/config
+      - /media/content/Movies:/movies
+      - /media/content/downloads/completed:/data/completed
       - /etc/localtime:/etc/localtime:ro
     env_file:
-      - .env-hidden
+      - .env
     restart: unless-stopped
     network_mode: "service:pia_transmission"
+    depends_on:
+      - "pia_transmission"
 
   lidarr:
     image: linuxserver/lidarr
@@ -76,25 +82,58 @@ services:
     volumes:
       - /opt/lidarr/:/config
       - /media/content/Music/:/music
-      - /media/content/downloads/completed/:/downloads/complete/
+      - /media/content/downloads/completed:/data/completed
       - /etc/localtime:/etc/localtime:ro
     env_file:
-      - .env-hidden
+      - .env
     restart: unless-stopped
     network_mode: "service:pia_transmission"
+    depends_on:
+      - "pia_transmission"
 
-  lazylibrarian:
-    image: linuxserver/lazylibrarian
-    container_name: lazylibrarian
-    env_file:
-      - .env-hidden
+#  lazylibrarian:
+#    image: linuxserver/lazylibrarian
+#    container_name: lazylibrarian
+#    env_file:
+#      - .env
+#    volumes:
+#      - /opt/lazylibrarian/:/config
+#      - /media/content/downloads/completed:/data/completed
+#      - /media/content/Books/:/books
+#      - /media/content/Audioooks/:/audiobooks
+#    restart: unless-stopped
+#    network_mode: "service:pia_transmission"
+#    depends_on:
+#      - "pia_transmission"
+
+  readarr:
+    image: ghcr.io/linuxserver/readarr:nightly 
+    container_name: readarr
     volumes:
-      - /opt/lazylibrarian/:/config
-      - /media/content/downloads/completed/:/downloads/complete/
+      - /opt/readarr/:/config
       - /media/content/Books/:/books
-      - /media/content/Audioooks/:/audiobooks
+      - /media/content/downloads/completed:/data/completed
+      - /etc/localtime:/etc/localtime:ro
+    env_file:
+      - .env
     restart: unless-stopped
     network_mode: "service:pia_transmission"
+    depends_on:
+      - "pia_transmission"
+
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:nightly
+    container_name: prowlarr
+    depends_on:
+      - pia_transmission
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - /opt/prowlarr/:/config
+    network_mode: "service:pia_transmission"
+    depends_on:
+      - "pia_transmission"
 
 networks:
   media_server:

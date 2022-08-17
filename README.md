@@ -8,7 +8,7 @@
 
 ## Introduction
 
-A simple network setup that has Jackett and Transmission route their traffic through openVPN while exposing Radarr (http://<localhost-ip>:7878), Sonarr (http://<localhost-ip>:8989), Lidarr (http://<localhost-ip>:8686), LazyLibrarian (http://<localhost-ip>:5299) and nginx to your local network. Nginx acts like a proxy for both Jackett (http://<localhost-ip>:8081) and Transmission (http://<localhost-ip>:8080).
+A simple network setup that has Jackett and Transmission route their traffic through openVPN while exposing Radarr (http://<localhost-ip>:7878), Sonarr (http://<localhost-ip>:8989), Lidarr (http://<localhost-ip>:8686), LazyLibrarian (http://<localhost-ip>:5299), Readarr (http://<localhost-ip>:8787),  Prowlarr (http://<localhost-ip>:9696), Plex (http://<localhost-ip>:32400), Jackett (http://<localhost-ip>:9091) and Transmission (http://<localhost-ip>:9090).
 
 
 ## Install
@@ -21,7 +21,10 @@ To run this here is what you need to do (Note that you need to configure your pa
  C) `mkdir /opt/sonarr` <br>
  D) `mkdir /opt/radarr` <br>
  E) `mkdir /opt/lidarr` <br>
- F) `mkdir /opt/lazylibrarian`
+ F) `mkdir /opt/lazylibrarian` <br>
+ G) `mkdir /opt/readarr` <br>
+ H) `mkdir /opt/prowlarr` <br>
+ I) `mkdir /opt/plex`
 
 
 2. Chown the folders above to the user id that corresponds to the data in your .env file: <br>
@@ -30,7 +33,10 @@ To run this here is what you need to do (Note that you need to configure your pa
  C) `chown -R <user>:<group> /opt/sonarr` <br>
  D) `chown -R <user>:<group> /opt/radarr` <br>
  E) `chown -R <user>:<group> /opt/lidarr` <br>
- F) `chown -R <user>:<group> /opt/lazylibrarian`
+ F) `chown -R <user>:<group> /opt/lazylibrarian` <br>
+ G) `chown -R <user>:<group> /opt/readarr` <br>
+ H) `chown -R <user>:<group> /opt/prowlarr` <br>
+ I) `chown -R <user>:<group> /opt/plex`
 
 3. Clone this information out into a folder of your choice then CD into it
 
@@ -114,6 +120,27 @@ volumes:
   - <path/to/your/downloads/complete folder/>:/downloads/complete/
 ```
 
+13. Update the service `Readarr` volume path directories
+```
+volumes:
+  - /opt/readarr/:/config
+  - <path/to/your/media/content/Books/>:/books
+  - <path/to/your/media/content/downloads/completed>:/data/completed
+  - /etc/localtime:/etc/localtime:ro
+```
+
+14. Update the service `Plex` volume path directories
+```
+volumes:
+  - /opt/plex:/config
+  - <path/to/your/TV>:/tv
+  - <path/to/your/Movies>:/movies
+  - <path/to/your/Music/>:/music
+  - <path/to/your/Books/>:/books
+  - <path/to/your/Photos/>:/photos
+  - <path/to/your/Other/>:/other
+```
+
 For steps 9 10 11 and 12, Transmission has a downloads folder, and inside that there are incomplete and complete folders, you will want to point your download complete folder at that folder structure, also mirror your downloads folder like above `/downloads/complete/` else Sonarr Radarr Lidarr and lazylibrarian wont be able to see the downloaded files.
 
 
@@ -136,12 +163,12 @@ Hopefully you wont see any failures
 
 ## How it works
 
-Sonarr, Radarr, Lidarr, LazyLibrarian and nginx will be exposed to your hosts on the following ports 8080, 8081, 7878 and 8989.
+Sonarr, Radarr, Lidarr, LazyLibrarian, Readarr, Prowlarr, plex and nginx will be exposed to your hosts on the following ports 8080, 8081, 7878, 8787, 9696, 32400 and 8989.
 
 If you see in each service
 ```
-networks:
-  - vpn-network
+networks_mide:
+  service:pia_transmission
 ```
 
 This is the network these containers will belong to. Pretty simple.
@@ -178,7 +205,7 @@ https://docs.docker.com/compose/networking/
 
 ## Health check
 
-Make sure that your Radarr, Sonarr, Lidarr, LazyLibrarian are running and their ports 7878, 8989 and 8686 are running respectively
+Make sure that your Radarr, Sonarr, Lidarr, LazyLibrarian, readarr, Prowlarr and plex are running and their ports 7878, 8989, 8686, 8787, 9696 and 32400 are running respectively
 
 Nginx should be running on ports 8080 and 8081 (test those addresses in the browser http://<localhost-ip>:8080 (transmission) and http://<localhost-ip>:8080 (jackett))
 

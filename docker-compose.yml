@@ -135,6 +135,24 @@ services:
     depends_on:
       - "pia_transmission"
 
+  plex:
+    image: lscr.io/linuxserver/plex:latest
+    container_name: plex
+    network_mode: host
+    env_file:
+      - .env
+    volumes:
+      - /opt/plex:/config
+      - /media/content/TV:/tv
+      - /media/content/Movies:/movies
+      - /media/content/Music/:/music
+      - /media/content/Books/:/books
+      - /media/content/Photos/:/photos
+      - /media/content/Other/:/other
+    restart: unless-stopped
+    depends_on:
+      - "pia_transmission"
+
 networks:
   media_server:
     driver: bridge

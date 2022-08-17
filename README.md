@@ -1,4 +1,4 @@
-# Docker-Transmission-OpenVPN-Jackett-Sonarr-Radarr-Lidarr-LazyLibrarian-nginx
+# Docker-Transmission-OpenVPN-Jackett-Sonarr-Radarr-Lidarr-LazyLibrarian-Readarr-Prowlarr-Plex
 
 ## Requirements
 
